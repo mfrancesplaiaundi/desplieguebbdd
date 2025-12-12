@@ -1,17 +1,21 @@
 <?php
+$url = getenv('DATABASE_URL');
 
-$host = getenv('MYSQL_HOST');
-$db   = getenv('MYSQL_DATABASE');
-$user = getenv('MYSQL_USER');
-$pass = getenv('MYSQL_PASSWORD');
-$port = getenv('MYSQL_PORT');
+$db = parse_url($url);
+
+$host = $db['host'];
+$port = $db['port'];
+$user = $db['user'];
+$pass = $db['pass'];
+$name = ltrim($db['path'], '/');
+
+$dsn = "mysql:host=$host;port=$port;dbname=$name;charset=utf8";
 
 try {
-    $dsn = "mysql:host=$host;port=$port;dbname=$db;charset=utf8";
     $pdo = new PDO($dsn, $user, $pass);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    echo "<p>✅ Conectado a MySQL mediante DATABASE_URL</p>";
 } catch (Exception $e) {
-    die("Error de conexión");
+    die("❌ Error de conexión");
 }
 
 $stmt = $pdo->query("SELECT * FROM mensajes");
