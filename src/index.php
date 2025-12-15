@@ -1,29 +1,48 @@
 <?php
-var_dump(getenv('DATABASE_URL'));
+echo "<h1>🌍 App web en Render + PostgreSQL</h1>";
 
-$url = getenv('DATABASE_URL');
+$url = getenv("DATABASE_URL");
+
+if (!$url) {
+    die("<p style='color:red'>DATABASE_URL no definida</p>");
+}
 
 $db = parse_url($url);
 
-$host = $db['host'];
-$port = $db['port'];
-$user = $db['user'];
-$pass = $db['pass'];
-$name = ltrim($db['path'], '/');
-
-$dsn = "mysql:host=$host;port=$port;dbname=$name;charset=utf8";
+$dsn = "pgsql:host={$db['host']};port={$db['port']};dbname=" . ltrim($db['path'], '/');
 
 try {
-    $pdo = new PDO($dsn, $user, $pass);
-    echo "<p>✅ Conectado a MySQL mediante DATABASE_URL</p>";
+    $pdo = new PDO($dsn, $db['user'], $db['pass'], [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+    ]);
+
+    echo "<p style='color:green'>✅ Conectado a PostgreSQL</p>";
+
+    // Crear tabla si no existe
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS mensajes (
+            id SERIAL PRIMARY KEY,
+            texto VARCHAR(255)
+        )
+    ");
+
+    // Insertar datos si está vacía
+    $count = $pdo->query("SELECT COUNT(*) FROM mensajes")->fetchColumn();
+    if ($count == 0) {
+        $pdo->exec("
+            INSERT INTO mensajes (texto) VALUES
+            ('Hola desde PostgreSQL'),
+            ('Render funciona'),
+            ('2DAW3 en producción 🚀')
+        ");
+    }
+
+    // Mostrar datos
+    echo "<h2>Mensajes:</h2>";
+    foreach ($pdo->query("SELECT texto FROM mensajes") as $row) {
+        echo "<p>• {$row['texto']}</p>";
+    }
+
 } catch (Exception $e) {
-    die("❌ Error de conexión");
-}
-
-$stmt = $pdo->query("SELECT * FROM mensajes");
-
-echo "<h2>Mensajes desde la base de datos</h2>";
-
-while ($fila = $stmt->fetch(PDO::FETCH_ASSOC)) {
-    echo "<p>{$fila['texto']}</p>";
+    echo "<p style='color:red'>❌ Error: {$e->getMessage()}</p>";
 }
