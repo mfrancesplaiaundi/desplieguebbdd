@@ -16,7 +16,7 @@ jobs:
       - name: Debug secrets existence
         run: |
           if [ -z "${{ secrets.DOCKER_PASSWORD }}" ]; then
-            echo "❌ DOCKER_PASSWORD no existe"
+            echo "❌ DOCKER_PASSWORD no existe   "
           else
             echo "✅ DOCKER_PASSWORD existe"
           fi
