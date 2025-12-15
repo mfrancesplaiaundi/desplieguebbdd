@@ -29,8 +29,8 @@ jobs:
       - name: Build Docker image with secret
         run: |
           docker build \
-          --build-arg APP_NAME="${{ secrets.MY_SECRET_MESSAGE }}" \
-          -t ${{ secrets.DOCKER_USERNAME }}/primerdespliegue .
+          --build-arg APP_NAME="APP BBDD" \
+          -t ${{ secrets.DOCKER_USERNAME }}/desplieguebbdd .
 
       - name: Push image
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/primerdespliegue
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/desplieguebbdd
