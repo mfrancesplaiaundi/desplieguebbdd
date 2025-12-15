@@ -1,4 +1,7 @@
 <?php
+
+echo getenv("APP_NAME");
+
 echo "<h1>🌍 Render + PostgreSQL funcionando</h1>";
 
 $url = getenv("DATABASE_URL");
