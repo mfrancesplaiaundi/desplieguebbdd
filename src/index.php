@@ -1,24 +1,34 @@
 <?php
-echo "<h1>🌍 App web en Render + PostgreSQL</h1>";
+echo "<h1>🌍 Render + PostgreSQL funcionando</h1>";
 
 $url = getenv("DATABASE_URL");
 
 if (!$url) {
-    die("<p style='color:red'>DATABASE_URL no definida</p>");
+    die("<p style='color:red'>❌ DATABASE_URL no definida</p>");
 }
 
 $db = parse_url($url);
 
-$dsn = "pgsql:host={$db['host']};port={$db['port']};dbname=" . ltrim($db['path'], '/');
+$host = $db['host'];
+$port = $db['port'] ?? 5432;
+$user = $db['user'];
+$pass = $db['pass'];
+$name = ltrim($db['path'], '/');
+
+/*
+  CLAVE: sslmode=require
+  Render obliga a SSL en PostgreSQL
+*/
+$dsn = "pgsql:host=$host;port=$port;dbname=$name;sslmode=require";
 
 try {
-    $pdo = new PDO($dsn, $db['user'], $db['pass'], [
+    $pdo = new PDO($dsn, $user, $pass, [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
     ]);
 
     echo "<p style='color:green'>✅ Conectado a PostgreSQL</p>";
 
-    // Crear tabla si no existe
+    // Crear tabla
     $pdo->exec("
         CREATE TABLE IF NOT EXISTS mensajes (
             id SERIAL PRIMARY KEY,
@@ -32,7 +42,7 @@ try {
         $pdo->exec("
             INSERT INTO mensajes (texto) VALUES
             ('Hola desde PostgreSQL'),
-            ('Render funciona'),
+            ('Render funciona correctamente'),
             ('2DAW3 en producción 🚀')
         ");
     }
