@@ -1,4 +1,6 @@
 <?php
+var_dump(getenv('DATABASE_URL'));
+
 $url = getenv('DATABASE_URL');
 
 $db = parse_url($url);
