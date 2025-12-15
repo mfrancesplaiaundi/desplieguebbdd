@@ -12,6 +12,7 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+        
       - name: Check Docker secrets
         run: |
           [ -z "${{ secrets.DOCKER_USERNAME }}" ] && echo "❌ USERNAME no existe" || echo "✅ USERNAME OK"
